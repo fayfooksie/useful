@@ -1,9 +1,15 @@
-##useful.js
+#clean.js
+---
+Removes all whitespace `\s*` from DOM.
+
+#useful.js
+---
+Various utility functions and pleasant aliases. Should work fine on all modern browsers.
 
 ###Object.prototype
 - `.extend(object)`
 
-###Array.prototype (NodeList)
+###Array.prototype, NodeList.prototype
 - `.lastIndex`
 - `.contains(item)`
 - `.each([this, ]callback)`
@@ -15,7 +21,7 @@
 - `.lower()`
 - `.upper()`
 
-###HTMLElement.prototype
+###Element.prototype
 - `.append(child[, ...])`
 - `.empty()`
 - `.prepend(child[, ...])`
