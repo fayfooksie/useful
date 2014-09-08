@@ -1,5 +1,6 @@
-void function(U, define) {
-	U.Array={
+void function(_, define, desc) {
+	"use strict";
+	_={
 		lastItem: {
 			get: function() {
 				return this[this.length-1];
@@ -54,29 +55,8 @@ void function(U, define) {
 				}
 			}
 		};
-	U.Event={
-		on: {
-			writable: true,
-			configurable: true,
-			value: function() {
-				this.addEventListener.apply(this, arguments);
-				}
-			},
-		off: {
-			writable: true,
-			configurable: true,
-			value: function() {
-				this.removeEventListener.apply(this, arguments);
-				}
-			},
-		dispatch: {
-			writable: true,
-			configurable: true,
-			value: function() {
-				this.dispatchEvent.apply(this, arguments);
-				}
-			}
-		};
+	define(Array.prototype, _);
+	define(NodeList.prototype, _);
 	define(Object.prototype, {
 		extend: {
 			writable: true,
@@ -88,30 +68,65 @@ void function(U, define) {
 						);
 					}
 				}
+			},
+		extendFast: {
+			writable: true,
+			configurable: true,
+			value: function(object) {
+				for(var key in object) {
+					this[key]=object[key];
+					}
+				}
 			}
 		});
 	define(String.prototype, {
-		lower: {
-			writable: true,
-			configurable: true,
-			value: function() {
-				return this.toLowerCase();
-				}
-			},
-		upper: {
-			writable: true,
-			configurable: true,
-			value: function() {
-				return this.toUpperCase();
-				}
-			}
+		lower: desc(String.prototype, "toLowerCase"),
+		upper: desc(String.prototype, "toUpperCase")
 		});
-	define(Array.prototype, U.Array);
-	define(NodeList.prototype, U.Array);
-	define(window.constructor.prototype, U.Event);
-	define(HTMLDocument.prototype, U.Event);
-	define(HTMLElement.prototype, U.Event);
-	define(HTMLElement.prototype, {
+	if("ActiveXObject" in window) {
+		define(window, _={
+			on: {
+				writable: true,
+				configurable: true,
+				value: function() {
+					this.addEventListener.apply(this, arguments);
+					}
+				},
+			off: {
+				writable: true,
+				configurable: true,
+				value: function() {
+					this.removeEventListener.apply(this, arguments);
+					}
+				},
+			dispatch: {
+				writable: true,
+				configurable: true,
+				value: function() {
+					this.dispatchEvent.apply(this, arguments);
+					}
+				},
+			remove: {
+				writable: true,
+				configurable: true,
+				value: function() {
+					this.parentNode.removeChild(this);
+					}
+				}
+			});
+		define(Element.prototype, _);
+		}
+	else {
+		define(EventTarget.prototype, _={
+			on: desc(EventTarget.prototype, "addEventListener"),
+			off: desc(EventTarget.prototype, "removeEventListener"),
+			dispatch: desc(EventTarget.prototype, "dispatchEvent")
+			});
+		if(!window.on) {
+			define(window, _);
+			}
+		}
+	define(Element.prototype, {
 		append: {
 			writable: true,
 			configurable: true,
@@ -149,13 +164,7 @@ void function(U, define) {
 				this.setAttribute(attribute, value||"");
 				}
 			},
-		unset: {
-			writable: true,
-			configurable: true,
-			value: function(attribute) {
-				this.removeAttribute(attribute);
-				}
-			}
+		unset: desc(Element.prototype, "removeAttribute")
 		});
 	Math.distance=function(x1, y1, x2, y2) {
 		return Math.sqrt(Math.pow(x2-x1, 2)+Math.pow(y2-y1, 2));
@@ -163,4 +172,4 @@ void function(U, define) {
 	Math.distance2=function(x1, y1, x2, y2) {
 		return (x2-=x1)*x2+(y2-=y1)*y2;
 		};
-	}(Object.create(null), Object.defineProperties);
+	}(null, Object.defineProperties, Object.getOwnPropertyDescriptor);
