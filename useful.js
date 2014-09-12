@@ -166,10 +166,8 @@ void function(_, define, desc) {
 			},
 		unset: desc(Element.prototype, "removeAttribute")
 		});
-	Math.distance=function(x1, y1, x2, y2) {
-		return Math.sqrt(Math.pow(x2-x1, 2)+Math.pow(y2-y1, 2));
-		};
-	Math.distance2=function(x1, y1, x2, y2) {
-		return (x2-=x1)*x2+(y2-=y1)*y2;
+	Object.inherit=function(target, parent) {
+		target.prototype=Object.create(parent.prototype);
+		target.prototype.constructor=parent;
 		};
 	}(null, Object.defineProperties, Object.getOwnPropertyDescriptor);
