@@ -12,14 +12,17 @@ Various utility functions and pleasant aliases. Should work fine on all modern b
 - `.extendFast(object)` - copy keys only
 
 ###Array.prototype, NodeList.prototype
-- `.lastItem` - get last item
+- `.lastItem` - get/set last item
 - `.contains(item)` - returns boolean
 - `.each([this, ]callback)` - alternative forEach()
+- `.empty()` - remove all items (retain properties)
 - `.fill(value)` - set all items to value
 - `.random()` - return random item
 - `.remove(item)` - remove item by value
+- `.set(item[, ...])` - set array items to arguments
 
 ###String.protoype
+- `.cut(match)` - basically replace(match, "")
 - `.lower()` - alias toLowerCase()
 - `.upper()` - alias toUpperCase()
 
