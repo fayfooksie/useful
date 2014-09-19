@@ -4,6 +4,9 @@ void function(_, define, desc) {
 		lastItem: {
 			get: function() {
 				return this[this.length-1];
+				},
+			set: function(value) {
+				this[this.length-1]=value;
 				}
 			},
 		contains: {
@@ -23,6 +26,15 @@ void function(_, define, desc) {
 					}
 				for(var i=0; i<this.length; ++i) {
 					callback.call(scope, this[i], i);
+					}
+				}
+			},
+		empty: {
+			writable: true,
+			configurable: true,
+			value: function() {
+				while(this.length) {
+					this.pop();
 					}
 				}
 			},
@@ -53,6 +65,18 @@ void function(_, define, desc) {
 						}
 					}
 				}
+			},
+		set: {
+			writable: true,
+			configurable: true,
+			value: function() {
+				for(var i=0; i<arguments.length; ++i) {
+					this[i]=arguments[i];
+					}
+				while(this.length>i) {
+					this.pop();
+					}
+				}
 			}
 		};
 	define(Array.prototype, _);
@@ -63,9 +87,11 @@ void function(_, define, desc) {
 			configurable: true,
 			value: function(object) {
 				for(var key in object) {
-					Object.defineProperty(this, key,
-						Object.getOwnPropertyDescriptor(object, key)
-						);
+					if(object.hasOwnProperty(key)) {
+						Object.defineProperty(this, key,
+							Object.getOwnPropertyDescriptor(object, key)
+							);
+						}
 					}
 				}
 			},
@@ -80,6 +106,13 @@ void function(_, define, desc) {
 			}
 		});
 	define(String.prototype, {
+		cut: {
+			writable: true,
+			configurable: true,
+			value: function(match) {
+				return this.replace(match, "");
+				}
+			},
 		lower: desc(String.prototype, "toLowerCase"),
 		upper: desc(String.prototype, "toUpperCase")
 		});
