@@ -13,14 +13,14 @@ function Markdown(text) {
 			})
 		.replace(/``(.+?)``/g, backtick)
 		.replace(/`(.+?)`/g, backtick)
-		.replace(/^-{3,}$(?:\r?\n)?/gm, "<hr>")
-		.replace(/(?:\r?\n)?(#{2,6})(.+)(?:\r?\n){0,2}/gm, function($0, $1, $2) {
+		.replace(/^-{3,}$(?:\r|\n|\r\n)?/gm, "<hr>")
+		.replace(/(#{2,6})(.+)/gm, function($0, $1, $2) {
 			return "<h"+$1.length+">"+$2+"</h"+$1.length+">";
 			})
-		.replace(/(?:\r?\n)?((?:^\s?&gt;\s.+?$[^]?)+)(?:\r?\n){0,2}/gm, function($0, $1) {
+		.replace(/((?:^\s?&gt;\s.+?$[^]?)+)/gm, function($0, $1) {
 			return "<blockquote>"+$1.replace(/^\s?&gt;\s/gm, "")+"</blockquote>";
 			})
-		.replace(/(?:\r?\n)?((?:^\s?[-*]\s.+?$[^]?)+)(?:\r?\n){0,2}/gm, function($0, $1) {
+		.replace(/((?:^\s?[-*]\s.+?$[^]?)+)/gm, function($0, $1) {
 			$1=$1.split(/\n/);
 			if(!$1[0]) $1.shift();
 			while(!$1[$1.length-1]) $1.pop();
@@ -29,6 +29,7 @@ function Markdown(text) {
 				}
 			return "<ul><li>"+$1.join("</li><li>").replace(/-/g, "&dash;")+"</li></ul>";
 			})
+		.replace(/(?:\r|\n|\r\n)?(<\/?(h\d|ul|li|blockquote)>)(?:\r|\n|\r\n){0,2}/g, "$1")
 		.replace(/(!)?\[(.*?)\]\(((?:https?:\/)?\/.+?)\)/g, function($0, $1, $2, $3) {
 			$3="&#"+$3.charCodeAt(0)+";"+$3.slice(1);
 			$2=$2?$2.replace(/"/g, "&quote;"):"";
