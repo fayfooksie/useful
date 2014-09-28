@@ -1,42 +1,49 @@
 function Markdown(text) {
 	function backtick(match, text) {
-		return "<code>"+text.replace(/./g, function(match) {
-			return "&#"+match.charCodeAt(0)+";";
+		return "<code>"+text.replace(/./g, function($0) {
+			return "&#"+$0.charCodeAt(0)+";";
 			})+"</code>";
 		};
 	return text
-		.replace(/&/g, "&amp;")
+		.replace(/&(?!\w+?;)/g, "&amp;")
 		.replace(/</g, "&lt;")
 		.replace(/>/g, "&gt;")
-		.replace(/\\./g, function(match) {
-			return "&#"+match.charCodeAt(1)+";";
+		.replace(/\\[\\`#![h*-]/g, function($0) {
+			return "&#"+$0.charCodeAt(1)+";";
 			})
 		.replace(/``(.+?)``/g, backtick)
 		.replace(/`(.+?)`/g, backtick)
-		.replace(/(?:\r?\n)?((?:^\s?[-*]\s.+?$[^]?)+)(?:\r?\n){0,2}/gm, function(match, list) {
-			list=list.split(/\n/);
-			if(!list[0]) list.shift();
-			while(!list[list.length-1]) list.pop();
-			for(var i=0; i<list.length; ++i) {
-				list[i]=list[i].replace(/^\s?[-*]\s/, "");
-				}
-			return "<ul><li>"+list.join("</li><li>").replace(/-/g, "&dash;")+"</li></ul>";
+		.replace(/^-{3,}$(?:\r?\n)?/gm, "<hr>")
+		.replace(/(?:\r?\n)?(#{2,6})(.+)(?:\r?\n){0,2}/gm, function($0, $1, $2) {
+			return "<h"+$1.length+">"+$2+"</h"+$1.length+">";
 			})
-		.replace(/(!)?\[(.*?)\]\(((?:https?:\/)?\/.+?)\)/g, function(match, i, text, url) {
-			url="&#"+url.charCodeAt(0)+";"+url.slice(1);
-			text=text?text.replace(/"/g, "&quote;"):"";
-			if(i) {
-				if(/\.webm$/.test(url)) {
-					return "<video src=\""+encodeURI(url)+"\" title=\""+text+"\" type=\"video/webm\" controls></video>";
+		.replace(/(?:\r?\n)?((?:^\s?&gt;\s.+?$[^]?)+)(?:\r?\n){0,2}/gm, function($0, $1) {
+			return "<blockquote>"+$1.replace(/^\s?&gt;\s/gm, "")+"</blockquote>";
+			})
+		.replace(/(?:\r?\n)?((?:^\s?[-*]\s.+?$[^]?)+)(?:\r?\n){0,2}/gm, function($0, $1) {
+			$1=$1.split(/\n/);
+			if(!$1[0]) $1.shift();
+			while(!$1[$1.length-1]) $1.pop();
+			for(var i=0; i<$1.length; ++i) {
+				$1[i]=$1[i].replace(/^\s?[-*]\s/, "");
+				}
+			return "<ul><li>"+$1.join("</li><li>").replace(/-/g, "&dash;")+"</li></ul>";
+			})
+		.replace(/(!)?\[(.*?)\]\(((?:https?:\/)?\/.+?)\)/g, function($0, $1, $2, $3) {
+			$3="&#"+$3.charCodeAt(0)+";"+$3.slice(1);
+			$2=$2?$2.replace(/"/g, "&quote;"):"";
+			if($1) {
+				if(/\.webm$/.test($3)) {
+					return "<video src=\""+encodeURI($3)+"\" title=\""+$2+"\" type=\"video/webm\" controls></video>";
 					}
 				else {
-					text="<img src=\""+encodeURI(url)+"\" title=\""+text+"\">";
+					$2="<img src=\""+encodeURI($3)+"\" title=\""+$2+"\">";
 					}
 				}
-			return "<a href=\""+encodeURI(url)+"\" target=\"_blank\">"+text+"</a>";
+			return "<a href=\""+encodeURI($3)+"\" target=\"_blank\">"+$2+"</a>";
 			})
-		.replace(/\b(https?:\/\/.+?)([\.\]\)]*(\s|$))/g, function(match, url, suffix) {
-			return "<a href=\""+encodeURI(url)+"\" target=\"_blank\">"+url+"</a>"+suffix;
+		.replace(/\b(https?:\/\/.+?)([\.\]\)]*(\s|$))/g, function($0, $1, $2) {
+			return "<a href=\""+encodeURI($1)+"\" target=\"_blank\">"+$1+"</a>"+$2;
 			})
 		.replace(/\*\*(.+?)\*\*/g, "<b>$1</b>")
 		.replace(/\*(.+?)\*/g, "<i>$1</i>")
