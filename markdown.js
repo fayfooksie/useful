@@ -8,6 +8,7 @@ function Markdown(text) {
 		return $1+"<code>"+escape($2)+"</code>";
 		};
 	return text
+		.replace(/\r\n?/g, "\n")
 		.replace(/&(?!\w+?;)/g, "&amp;")
 		.replace(/</g, "&lt;")
 		.replace(/>/g, "&gt;")
@@ -16,14 +17,14 @@ function Markdown(text) {
 		.replace(/\\[\\`#![h*-_]/g, function($0) {
 			return "&#"+$0.charCodeAt(1)+";";
 			})
-		.replace(/^(?:-{3,}|={3,}|_{3,})/gm, "<hr>")
-		.replace(/(#{2,6})(.+)/gm, function($0, $1, $2) {
+		.replace(/^(?:-{3,}|={3,}|_{3,})$/gm, "<hr>\n")
+		.replace(/^(#{2,6})(.+)/gm, function($0, $1, $2) {
 			return "<h"+$1.length+">"+$2+"</h"+$1.length+">";
 			})
-		.replace(/((?:^ ?&gt; .+?$[^]?)+)/gm, function($0, $1) {
-			return "<blockquote>"+$1.replace(/^ ?...../gm, "")+"</blockquote>";
+		.replace(/((?:^ ?&gt; .+?$\n?)+)/gm, function($0, $1) {
+			return "<blockquote>"+$1.replace(/^ ?...../gm, "")+"</blockquote>\n";
 			})
-		.replace(/(?:^ ?[\-*] .+?$[^]?)+/gm, function($0) {
+		.replace(/(?:^ ?[\-*] .+?$\n?)+/gm, function($0) {
 			$0=$0.split(/\n/);
 			if(!$0[0]) {
 				$0.shift();
@@ -34,9 +35,8 @@ function Markdown(text) {
 			for(var i=0; i<$0.length; ++i) {
 				$0[i]=$0[i].replace(/^ ?../, "");
 				}
-			return "<ul><li>"+$0.join("</li><li>").replace(/-/g, "&dash;")+"</li></ul>";
+			return "<ul><li>"+$0.join("</li><li>").replace(/-/g, "&dash;")+"</li></ul>\n";
 			})
-		.replace(/(<\/(h\d|ul|li|blockquote)>)(?:\r\n?|\n)/g, "$1")
 		.replace(/(!)?\[(.*?)\]\((?:https?:)?(\/.+?)\)/g, function($0, $1, $2, $3) {
 			$2=$2?$2.replace(/"/g, "&quot;"):"";
 			$3=encodeURI(escape($3));
@@ -61,7 +61,9 @@ function Markdown(text) {
 		.replace(/-(\w+?)-/g, "<s>$1</s>")
 		.replace(/(^|\s)_(\w.+?\S)_(\W|$)/g, "$1<u>$2</u>$3")
 		.replace(/(^|\s)-(\w.+?\S)-(\W|$)/g, "$1<s>$2</s>$3")
-		.replace(/(?:\r\n?|\n)<(h\d|ul|blockquote)>/g, "<$1>")
-		.replace(/<hr>(?:\r\n?|\n)/g, "<hr>")
-		.replace(/\r\n?|\n/g, "<br>");
+		.replace(/([^\n])\n<(h\d|hr|ul|blockquote)>/g, "$1\n\n<$2>")
+		.replace(/<\/(h\d|hr|ul|blockquote)>\n([^\n])/g, "</$1>\n\n$2")
+		.replace(/(?:^|\n\n)([^\n<>][^]*?)(?=\n\n|$)/g, "<p>$1</p>")
+		.replace(/<\/(h\d|hr|ul|blockquote|p)>\n\n/g, "</$1>")
+		.replace(/\n/g, "<br>")
 	};
