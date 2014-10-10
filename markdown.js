@@ -12,8 +12,8 @@ function Markdown(text) {
 		.replace(/&(?!\w+?;)/g, "&amp;")
 		.replace(/</g, "&lt;")
 		.replace(/>/g, "&gt;")
-		.replace(/([^\\])``(.+?)``/g, backtick)
-		.replace(/([^\\])`(.+?)`/g, backtick)
+		.replace(/(^|[^\\])``(.+?)``/g, backtick)
+		.replace(/(^|[^\\])`(.+?)`/g, backtick)
 		.replace(/\\[\\`#![h*-_]/g, function($0) {
 			return "&#"+$0.charCodeAt(1)+";";
 			})
@@ -37,6 +37,10 @@ function Markdown(text) {
 				}
 			return "<ul><li>"+$0.join("</li><li>").replace(/-/g, "&dash;")+"</li></ul>\n";
 			})
+		.replace(/([^\n])\n<(h\d|hr|ul|blockquote)>/g, "$1\n\n<$2>")
+		.replace(/<\/(h\d|hr|ul|blockquote)>\n([^\n])/g, "</$1>\n\n$2")
+		.replace(/(?:^|\n\n)((?:[^\n<]|<code>)[^]*?)(?=\n\n|$)/g, "<p>$1</p>")
+		.replace(/<(hr|\/(?:h\d|ul|blockquote|p))>\n\n/g, "<$1>")
 		.replace(/(!)?\[(.*?)\]\((?:https?:)?(\/.+?)\)/g, function($0, $1, $2, $3) {
 			$2=$2?$2.replace(/"/g, "&quot;"):"";
 			$3=encodeURI(escape($3));
@@ -55,15 +59,11 @@ function Markdown(text) {
 			})
 		.replace(/\-\-\-/g, "&mdash;")
 		.replace(/\-\-/g, "&ndash;")
-		.replace(/\*\*(.+?)\*\*/g, "<b>$1</b>")
-		.replace(/\*(.+?)\*/g, "<i>$1</i>")
-		.replace(/_(\w+?)_/g, "<u>$1</u>")
-		.replace(/-(\w+?)-/g, "<s>$1</s>")
-		.replace(/(^|\s)_(\w.+?\S)_(\W|$)/g, "$1<u>$2</u>$3")
-		.replace(/(^|\s)-(\w.+?\S)-(\W|$)/g, "$1<s>$2</s>$3")
-		.replace(/([^\n])\n<(h\d|hr|ul|blockquote)>/g, "$1\n\n<$2>")
-		.replace(/<\/(h\d|hr|ul|blockquote)>\n([^\n])/g, "</$1>\n\n$2")
-		.replace(/(?:^|\n\n)([^\n<>][^]*?)(?=\n\n|$)/g, "<p>$1</p>")
-		.replace(/<\/(h\d|hr|ul|blockquote|p)>\n\n/g, "</$1>")
+		.replace(/\*\*(\S+|\S.+?\S)\*\*/g, "<b>$1</b>")
+		.replace(/\*(\S+|\S.+?\S)\*/g, "<i>$1</i>")
+		.replace(/-(\S+|\S.+?\S)-/g, "<s>$1</s>")
+		.replace(/__(\S+|\S.+?\S)__/g, "<u>$1</u>")
+		.replace(/(^|\W)-(\S+|\S.+?\S)-(\W|$)/gm, "$1<s>$2</s>$3")
+		.replace(/(^|\W)_(\S+|\S.+?\S)_(\W|$)/gm, "$1<u>$2</u>$3")
 		.replace(/\n/g, "<br>")
 	};
