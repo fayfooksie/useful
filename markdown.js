@@ -1,6 +1,6 @@
 function Markdown(text) {
 	function escape($0) {
-		return $0.replace(/[\\`#![h*\-_&]/g, function($0) {
+		return $0.replace(/[^\w\s]/g, function($0) {
 			return "&#"+$0.charCodeAt(0)+";";
 			});
 		};
@@ -15,7 +15,7 @@ function Markdown(text) {
 		.replace(/>/g, "&gt;")
 		.replace(/(^|[^\\])``(.+?)``/g, backtick)
 		.replace(/(^|[^\\])`(.+?)`/g, backtick)
-		.replace(/\\[\\`#![h*-_]/g, function($0) {
+		.replace(/\\[^\w\s]/g, function($0) {
 			return "&#"+$0.charCodeAt(1)+";";
 			})
 		.replace(/&lt;(\/?(?:b|em|h[1-6]|hr|i|s|strong|table|td|th|tr|u))&gt;/g, "<$1>")
@@ -62,8 +62,8 @@ function Markdown(text) {
 				}
 			return "<a href=\""+$3+"\" target=\"_blank\">"+$2+"</a>";
 			})
-		.replace(/\b(https?:\/\/.+?)([\.\]\)]*(\s|$))/g, function($0, $1, $2) {
-			return "<a href=\""+encodeURI(escape($1))+"\" target=\"_blank\">"+$1+"</a>"+$2;
+		.replace(/(^|\s|\(|\[)(https?:\/\/.+?)([\.\]\)]*(?:\s|$))/g, function($0, $1, $2, $3) {
+			return $1+"<a href=\""+encodeURI(escape($2))+"\" target=\"_blank\">"+$2+"</a>"+$3;
 			})
 		.replace(/\-\-\-/g, "&mdash;")
 		.replace(/\-\-/g, "&ndash;")
