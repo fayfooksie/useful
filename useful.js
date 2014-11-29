@@ -170,22 +170,37 @@ void function(_, define, desc) {
 				return this;
 				}
 			},
-		empty: {
-			writable: true,
-			configurable: true,
-			value: function() {
-				while(this.firstChild) {
-					this.removeChild(this.firstChild);
-					}
-				return this;
-				}
-			},
 		prepend: {
 			writable: true,
 			configurable: true,
 			value: function() {
 				for(var i=0; i<arguments.length; ++i) {
 					this.insertBefore(arguments[i], this.firstChild);
+					}
+				return this;
+				}
+			},
+		prependChild: {
+			writable: true,
+			configurable: true,
+			value: function(node) {
+				this.insertBefore(node, this.firstChild);
+				}
+			},
+		removeAll: {
+			writable: true,
+			configurable: true,
+			value: function(start, end) {
+				if(start || end) {
+					if(end===undefined) {
+						end=this.childNodes.length;
+						}
+					for(var i=start||0; i<end; ++i) {
+						this.removeChild(this.childNodes[i]);
+						}
+					}
+				else while(this.firstChild) {
+					this.removeChild(this.firstChild);
 					}
 				return this;
 				}
