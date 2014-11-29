@@ -27,9 +27,10 @@ Various utility functions and pleasant aliases. Should work fine on all modern b
 - `.upper()` - alias toUpperCase()
 
 ###Element.prototype
-- `.empty()` - remove all children
 - `.append(child[, ...])` - append variable children
 - `.prepend(child[, ...])` - prepend variable children
+- `.prependChild(child)` - prepend single child
+- `.removeAll([start, end])` - remove all children or children within specified range
 - `.set(attribute[, value])` - alias setAttribute(), value optional
 - `.unset(attribute)` - alias removeAttribute()
 
