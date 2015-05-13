@@ -116,8 +116,8 @@ void function(_, define, desc) {
 		lower: desc(String.prototype, "toLowerCase"),
 		upper: desc(String.prototype, "toUpperCase")
 		});
-	if("ActiveXObject" in window) {
-		define(window, _={
+	if(!window.EventTarget) {
+		define(Window.prototype, _={
 			on: {
 				writable: true,
 				configurable: true,
@@ -148,6 +148,7 @@ void function(_, define, desc) {
 				}
 			});
 		define(Element.prototype, _);
+		define(HTMLDocument.prototype, _);
 		}
 	else {
 		define(EventTarget.prototype, _={
@@ -155,8 +156,8 @@ void function(_, define, desc) {
 			off: desc(EventTarget.prototype, "removeEventListener"),
 			dispatch: desc(EventTarget.prototype, "dispatchEvent")
 			});
-		if(!window.on) {
-			define(window, _);
+		if(!(window instanceof EventTarget)) {
+			define(Window.prototype, _);
 			}
 		}
 	define(Element.prototype, {
@@ -168,6 +169,12 @@ void function(_, define, desc) {
 					this.appendChild(arguments[i]);
 					}
 				return this;
+				}
+			},
+		parent: {
+			configurable: true,
+			get: function() {
+				return this.parentNode;
 				}
 			},
 		prepend: {
